@@ -1,0 +1,78 @@
+\documentclass[onecolumn]{IEEEtran}
+
+% Basic required LaTeX packages
+\usepackage[english]{babel} 
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{charter}
+
+% Packages which allow format customisation
+\usepackage{titling}
+\usepackage{cite}
+\usepackage{caption}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{etoolbox} 
+\patchcmd{\section}{\centering}{}{}{} % uses the etoolbox package to left align section headings
+
+% Packages which help display things like maths and images correctly
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage[export]{adjustbox}
+\usepackage{textcomp}
+\usepackage{pifont}
+\usepackage{longtable}
+
+% All your code should be in between the \begin{document} and \end{document} tags otherwise your compiler willl throw an error
+\begin{document}
+
+%\tableofcontents % optional
+
+
+\title{Group 12 Technical Report}
+%\date{} % Leave blank to omit date. Comment out to include today's date or you can add a specific date
+\maketitle
+
+\section{Introduction}
+\section{Hardware}
+\subsection{Forwards-Backwards Movement}
+\subsection{Left-Right Movement}
+\subsection{Up-Down Movement}
+\subsection{Gripper}
+\subsection{Additional Components}
+\subsubsection{Camera}
+\subsubsection{Camera Tower}
+\subsubsection{Chessboard}
+\subsubsection{Chess Pieces}
+\subsubsection{Batteries}
+\subsubsection{Keypad}
+\subsubsection{Speaker}
+\section{Software}
+\subsection{High Level Algorithm}
+\subsection{Contents of Codebase}
+\subsection{Key Algorithms}
+\subsubsection{Segment(image)}
+\subsubsection{crop\_squares(image)} 
+\subsubsection{detect\_empty(model, previousFEN, valid\_origins, probability\_rank, WorB)}
+\subsubsection{detect\_move(model, piece, validmoves, WorB, kingside, queenside)}
+\subsubsection{userTurn(board, computerside, WorB)}
+\subsubsection{gameplayloop(Board)}
+\section{Integrating Hardware and Software}
+\subsection{Components}
+\subsection{Key Algorithms}
+\subsubsection{squaretoCoordinates(square)}
+\subsubsection{plan(move, board, enpassant)}
+\subsubsection{movePiece(moveFrom, moveTo)}
+\section{Testing}
+\section{Reflection: Achievements and Difficulties}
+\section{Appendix}
+
+
+
+
+    
+
+\end{document}
