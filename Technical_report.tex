@@ -17,6 +17,7 @@
 
 % Packages which help display things like maths and images correctly
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -92,9 +93,33 @@ Checkmate uses the speaker to communicate with the user, to eliminate the need f
 
 \subsection{Contents of Codebase}
 \subsection{Key Algorithms}
-\subsubsection{Segment(image)}
+\subsubsection{segmentation\_analysis(image)}
+Segmentation\_analysis takes a raw image as an input (directly from the robot's camera), and edits the image, so the non-chessboard pieces of the image get cropped, and returns the values of the boundaries of the board. 
 \subsubsection{crop\_squares(image)} 
+Crop\_squares takes the output of segmentation\_analysis, the image taken by the camera but cropped so only the chessboard is visible, and divides the image into 64 individual squares. 
+
+\begin{algorithm}[h!]
+\caption{Psuedo-code for crop\_squares(image)}
+\begin{algorithmic}
+\STATE $\:$ \COMMENT{read image, determine height and width of image}
+\STATE $corner_x,\:corner_y\:=\:0$ 
+\STATE $square_{height},\:square_{width}\:=\:height\_of\_image / 8$ \COMMENT{image will always be square, so only need one value}
+\STATE $i\:=\:0$
+\WHILE {i < 8}
+%\STATE $letter = 'a',\:start = i*8,\:end = start + 8$
+\FOR{j in range start to end}
+\STATE $\:$ \COMMENT{crop the image to pixels corner\textsubscript{x}, corner\textsubscript{y}, square\textsubscript{height}, square\textsubscript{width}}
+\STATE $\:$ \COMMENT{resize board to 244x244 pixels, and antialias to eliminate noise}
+\STATE $\:$ \COMMENT{save into "cropped images" folder with tag of the letter and number of the square}
+\STATE $\:$ \COMMENT{adjust values for corner\textsubscript{x}, square\textsubscript{height}, and letter}
+\ENDFOR
+\STATE $corner_x\:=\:0, square_{height}\:=\:0$
+\STATE $\:$ \COMMENT {increment corner\textsubscript{y}, square\textsubscript{width}, and i}
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
 \subsubsection{detect\_empty(model, previousFEN, valid\_origins, probability\_rank, WorB)}
+
 \subsubsection{detect\_move(model, piece, validmoves, WorB, kingside, queenside)}
 \subsubsection{userTurn(board, computerside, WorB)}
 \subsubsection{gameplayloop(Board)}
@@ -125,4 +150,3 @@ system image w keypad included \\
 [4]\href{https://uk.rs-online.com/web/p/tubing-struts/7613322/}{https://uk.rs-online.com/web/p/tubing-struts/7613322/}
 
 \end{document}
-
