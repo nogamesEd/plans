@@ -18,7 +18,8 @@
 % Packages which help display things like maths and images correctly
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithmic}
+\usepackage{algcompatible}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{multirow}
@@ -58,7 +59,7 @@ The gripper is a very simple design, with inspiration drawn from last year's gan
 This gripper was not the original design, which was a soft cushion on the end of the gripper, which was pressed into a piece, and then a vacuum pump caused the cushion to hold the piece in place until it was in the desired location, and then was released. However, this design did include the addition of a vacuum pump, which would have been additional weight, tubes running from the vacuum pump to the gripper, and was more steps to control. With the addition of the foam to the current claw-like design, the claw does not pick up the pieces so the base is no longer facing the chess board, which was why the claw-like design was originally rejected. \par
 \subsection{Additional Components}
 \subsubsection{Camera}
-Checkmate uses a Logitech C270 HD webcam, with built in lighting correction and a 60\textdegree\: field of view. The camera is attached to a mount which is attached to Checkmate's base, and must remain in its given orientation throughout the duration of the game. 
+Checkmate uses a Logitech C720 HD webcam, with built in lighting correction and a 60\textdegree\: field of view. The camera is attached to a mount which is attached to Checkmate's base, and must remain in its given orientation throughout the duration of the game. 
 \subsubsection{Camera Tower}
 The camera tower is THIS tall, which is the minimum height required to allow the camera a view of the full chessboard. The camera tower is built from (is it lego still or ali strut now?), and the horizontal piece at the top of the tower is built from (this thing), and is (this long). The tower is connected to the (right or left) strut, with the centre of the tower lining up with the centre of the struct. 
 \subsubsection{Chessboard}
@@ -91,36 +92,81 @@ Checkmate uses the speaker to communicate with the user, to eliminate the need f
 \end{minipage}
 \end{figure}
 
+Add in something about using FEN notation here\newline
 \subsection{Contents of Codebase}
 \subsection{Key Algorithms}
 \subsubsection{segmentation\_analysis(image)}
-Segmentation\_analysis takes a raw image as an input (directly from the robot's camera), and edits the image, so the non-chessboard pieces of the image get cropped, and returns the values of the boundaries of the board. 
+Segmentation\_analysis takes a raw image as an input (directly from the robot's camera), and edits the image, so the non-chessboard pieces of the image get cropped, and returns the values of the boundaries of the board.
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for segmentation\_analysis(image}
+\begin{algorithmic}[1]
+\STATE \text{read raw image}
+\STATE$\text{convert the image to grayscale}$
+\STATE$\text{determine the height and width of the image}$ 
+\STATE$\text{blur the image to reduce noise (apply a low pass filter to it)}$
+\STATE \text{find the edge of the blurred image by taking the absolute value of the difference between the original grey}
+\STATEx \text{image and a shifted grey image} 
+\STATE$\text{sum the edge and smooth the image's histogram}$ 
+\STATE$\text{find the highs and lows of the histogram}$
+\STATE$\text{calculate the width of the board}$
+\STATE$\text{locate the boundaries of the chessboard}$
+\STATE$\text{check the ratios of the boundaries, to make sure the cropped image is square}$
+\STATE $\text{return: horizontal and vertical boundaries}$
+\end{algorithmic}
+\end{algorithm}
+
+ 
 \subsubsection{crop\_squares(image)} 
 Crop\_squares takes the output of segmentation\_analysis, the image taken by the camera but cropped so only the chessboard is visible, and divides the image into 64 individual squares. 
 
-\begin{algorithm}[h!]
-\caption{Psuedo-code for crop\_squares(image)}
-\begin{algorithmic}
-\STATE $\:$ \COMMENT{read image, determine height and width of image}
+\begin{algorithm}[H]
+\caption{Pseudo-code for crop\_squares(image)}
+\begin{algorithmic}[1]
+\STATE $\text{read image, determine height and width of image}$
 \STATE $corner_x,\:corner_y\:=\:0$ 
 \STATE $square_{height},\:square_{width}\:=\:height\_of\_image / 8$ \COMMENT{image will always be square, so only need one value}
 \STATE $i\:=\:0$
 \WHILE {i < 8}
-%\STATE $letter = 'a',\:start = i*8,\:end = start + 8$
+\STATE $letter = 'a',\:start = i*8,\:end = start + 8$
 \FOR{j in range start to end}
-\STATE $\:$ \COMMENT{crop the image to pixels corner\textsubscript{x}, corner\textsubscript{y}, square\textsubscript{height}, square\textsubscript{width}}
-\STATE $\:$ \COMMENT{resize board to 244x244 pixels, and antialias to eliminate noise}
-\STATE $\:$ \COMMENT{save into "cropped images" folder with tag of the letter and number of the square}
-\STATE $\:$ \COMMENT{adjust values for corner\textsubscript{x}, square\textsubscript{height}, and letter}
+\STATE $\text{crop the image to pixels corner\textsubscript{x}, corner\textsubscript{y}, square\textsubscript{height}, square\textsubscript{width}}$ 
+\STATE $\text{resize board to 244x244 pixels, and antialias to eliminate noise}$ 
+\STATE $\text{save into "cropped images" folder with tag of the letter and number of the square}$
+\STATE $\text{adjust values for corner\textsubscript{x}, square\textsubscript{height}, and letter}$ 
 \ENDFOR
 \STATE $corner_x\:=\:0, square_{height}\:=\:0$
-\STATE $\:$ \COMMENT {increment corner\textsubscript{y}, square\textsubscript{width}, and i}
+\STATE $\text{increment corner\textsubscript{y}, square\textsubscript{width}, and i}$ 
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
 \subsubsection{detect\_empty(model, previousFEN, valid\_origins, probability\_rank, WorB)}
+Detect\_empty determines a best guess for what square was left empty that previous was filled after a user's move. Detect\_empty is used if the robot makes an incorrect guess, in order to narrow down the possible correct guesses.
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for detect\_empty(model, previousFEN, valid\_origins, probability\_rank, WorB)}
+\begin{algorithmic}[1]
+\STATE $\text{Read the FEN notation of the previous board state}$
+\STATE $\text{Split the FEN notation into the eight subcomponents}$
+\STATE $\text{Create a list of all valid origins (derived from the previousFEN input)}$
+\STATE $\text{Crop the sides of each image to avoid other squares that may be present in the image}$
+\STATE $\text{Generate a list of predicted empty squares based on the possible origin squares and analysis of the images}$
+\STATE $\text{Find the square previously containing a piece with the highest probability of being empty after the user's move}$
+\STATE $\text{Return: the empty square and the piece}$
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection{detect\_move(model, piece, validmoves, WorB, kingside, queenside)}
+Detect\_move is used to determine what move a user just made. Detect\_move is called every time a user presses the enter or yes key after it is the user's turn to move. 
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for detect\_move(model, piece, validmoves, WorB, kingside, queenside)}
+\begin{algorithmic}
+\
+\end{algorithmic}
+\end{algorithm}
+
+
 \subsubsection{userTurn(board, computerside, WorB)}
 \subsubsection{gameplayloop(Board)}
 \section{Integrating Hardware and Software}
