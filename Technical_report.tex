@@ -18,7 +18,6 @@
 % Packages which help display things like maths and images correctly
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm}
-%\usepackage{algorithmic}
 \usepackage{algcompatible}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -73,33 +72,23 @@ The keypad is a means of communication, allowing the user to respond to Checkmat
 \subsubsection{Speaker}
 Checkmate uses the speaker to communicate with the user, to eliminate the need for a screen. The speaker is connected to the pi via (what). 
 \section{Software}
+The scripts and functions for the robot were all written in Python, and can be viewed in Github under the name "nogames." The overall problem of creating this machine was divided into smaller goals: image segmentation, image analysis, and connecting the Raspberry pi to Stockfish, the chess AI. OpenCV, and open source computer vision and machine learning software library[5], was used to import and manipulate the images of the chessboard. 
+
 \subsection{High Level Algorithm}
 
 \begin{figure}[h!]
-\centering
-\begin{minipage}{.55\textwidth}
   \centering
-  \includegraphics[width=.45\linewidth]{alg_flow_1}
-  \captionof{figure}{High Level Algorithm}
-  \label{fig:test1}
-\end{minipage}%
-\hspace{-3.75cm}
-\begin{minipage}{.65\textwidth}
-  \centering
-  \includegraphics[width=.55\linewidth]{alg_flow_2}
-  \captionof{figure}{Algorithm to Detect and Confirm a User's Move}
-  \label{fig:test2}
-\end{minipage}
+  \includegraphics[scale = .3]{white_square.png}
 \end{figure}
 
-Add in something about using FEN notation here\newline
+
 \subsection{Contents of Codebase}
 \subsection{Key Algorithms}
 \subsubsection{segmentation\_analysis(image)}
 Segmentation\_analysis takes a raw image as an input (directly from the robot's camera), and edits the image, so the non-chessboard pieces of the image get cropped, and returns the values of the boundaries of the board.
 
 \begin{algorithm}[H]
-\caption{Pseudo-code for segmentation\_analysis(image}
+\caption{Pseudo-code for segmentation\_analysis(image)}
 \begin{algorithmic}[1]
 \STATE \text{read raw image}
 \STATE$\text{convert the image to grayscale}$
@@ -126,17 +115,17 @@ Crop\_squares takes the output of segmentation\_analysis, the image taken by the
 \STATE $\text{read image, determine height and width of image}$
 \STATE $corner_x,\:corner_y\:=\:0$ 
 \STATE $square_{height},\:square_{width}\:=\:height\_of\_image / 8$ \COMMENT{image will always be square, so only need one value}
-\STATE $i\:=\:0$
-\WHILE {i < 8}
-\STATE $letter = 'a',\:start = i*8,\:end = start + 8$
-\FOR{j in range start to end}
+\STATE $row\:=\:0$
+\WHILE {row < 8}
+\STATE $letter = 'a',\:start = row*8,\:end = start + 8$
+\FOR{column in range start to end}
 \STATE $\text{crop the image to pixels corner\textsubscript{x}, corner\textsubscript{y}, square\textsubscript{height}, square\textsubscript{width}}$ 
 \STATE $\text{resize board to 244x244 pixels, and antialias to eliminate noise}$ 
-\STATE $\text{save into "cropped images" folder with tag of the letter and number of the square}$
+\STATE $\text{save into "cropped images" folder with tag of the letter and number of the square (letter, column)}$
 \STATE $\text{adjust values for corner\textsubscript{x}, square\textsubscript{height}, and letter}$ 
 \ENDFOR
 \STATE $corner_x\:=\:0, square_{height}\:=\:0$
-\STATE $\text{increment corner\textsubscript{y}, square\textsubscript{width}, and i}$ 
+\STATE $\text{increment corner\textsubscript{y}, square\textsubscript{width}, and row}$ 
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
@@ -161,21 +150,153 @@ Detect\_move is used to determine what move a user just made. Detect\_move is ca
 
 \begin{algorithm}[H]
 \caption{Pseudo-code for detect\_move(model, piece, validmoves, WorB, kingside, queenside)}
-\begin{algorithmic}
-\
+\begin{algorithmic}[1]
+\STATE $\text{Crop the pixels to the sides of the images, to avoid any other squares which may be visible within the image}$
+\STATE $\text{Create list of possible destination squares}$
+\STATE $\text{Create second list of all squares used when castling}$
+\STATE $\text{Analyse \textbf{only} squares used when castling, to determine whether a castling move was made}$
+\STATE $\text{If not castling: create a list of the predicted not empty squares that were empty previously, in order of most}$
+\STATEx $\text{to least likely}$
+\STATE $\text{return: most likely to be a used square that was empty previously}$
 \end{algorithmic}
 \end{algorithm}
 
 
-\subsubsection{userTurn(board, computerside, WorB)}
+\subsubsection{userTurn(board, computerside, topleft, bottomright, WorB, vc, firstImage, rotateImage, control, lang, storeMovesList)}
+UserTurn is called after the robot has completed a turn, and runs from then until the user confirms the robot correctly interpreted the user's move, and the move is stored. 
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for userTurn(board, computerside, topleft, bottomright, WorB, vc, firstImage, rotateImage, control, lang, storeMovesList)}
+\begin{algorithmic}[1]
+\STATE $\text{Check to see if the user is in check or checkmate}$
+\STATE $\text{Ask the user to make a move, wait for confirmation}$
+\STATE $\text{Capture an image of the board}$
+\STATE $\text{Determine if castling is a legal move based on the FEN notation derived from the "board" input}$
+\STATE $\text{Send a request to Tardis, running TensorFlow, to analyse the images and return expected moves}$
+\STATE $\text{Assign response to "data"}$
+\STATE $\text{Using the most probable move detected:}$
+\STATE $\text{If the move is a promotion, confirm this with the user}$
+\STATE $\text{If the move is castling, confirm this with the user}$
+\STATE $\text{If the move is neither of the above, confirm what the interpreted move is with the user}$
+\IF{Response if "yes"}
+	\STATE $\text{Store move, and return true}$
+\ELSE
+	\IF{Origin is not known}
+	\STATE $\text{Ask if piece from best guess moved from its origin square}$
+		\IF{Response is "yes"}
+			\STATE $\text{Store origin square}$
+			\STATE $\text{Update "possible legal moves"}$
+			\STATE $\text{Update move to next best guess}$
+		\ELSE
+			\STATE $\text{Increment the incorrect guess count}$
+			\IF{Incorrect guess count = 2}
+			\STATE $\text{Ask the user if they're sure the move they made is legal}$
+				\IF{Response is "yes"}
+				\STATE $\text{update move to next best guess}$
+				\ELSE
+				\STATE $\text{ask user to make a new move}$
+				\STATE $\text{rerun function}$
+				\ENDIF
+			\ELSE
+			\STATE $\text{update move to next best guess}$
+			\STATE $\text{Re-guess piece moved, and piece's origin square}$
+			\ENDIF
+		\ENDIF
+	\ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
 \subsubsection{gameplayloop(Board)}
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for gameplayloop(Board))}
+\begin{algorithmic}[1]
+\STATE $\text{Initialise camera}$
+\STATE $\text{Initialise Store Moves class}$
+\STATE $\text{Calibrate board position by sending requests to the EV3}$
+\STATE $\text{Allows user to select difficulty and assign selection to mode}$
+\STATE $\text{Allow user to select white or black and assign selection to worB}$
+\STATE $\text{Set up Stockfish with the amount of time it takes to decide each move, determined by the difficulty level}$
+\STATE $\text{Run the game recursively until user quits or checkmate is achieved}$
+\IF{user selected white}
+\STATE $\text{start with the user's turn, so run userTurn}$
+\ELSE
+\STATE $\text{start with robot's turn}$
+\ENDIF
+\IF{user's turn is false}
+\STATE $\text{game is over}$
+\ELSE
+\STATE $\text{determine robot's move}$
+	\IF{robot's move is none}
+	\STATE $\text{user wins}$
+	\ELSE
+	\STATE $\text{Break FEN notation into components}$
+	\STATE $\text{Store computer's move into Store Moves list}$
+	\STATE $\text{Execute next move}$
+		\IF{move was a promotion}
+		\STATE $\text{ask user to place queen on specific square}$
+		\ENDIF
+	\STATE $\text{repeat robot's move to the user}$
+	\ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
 \section{Integrating Hardware and Software}
 \subsection{Components}
 There are three primary components of the hardware and software, excluding the robot itself: The Raspberry Pi, which controls game logic, user interface, states, interprets vision, keypad inputs, and outputs sound, the server that runs the chess AI, and determines the next logical move, and the EV3 brick, which runs the motors. The key algorithms surrounding how the software controls the hardware surround moving the gripper to a specific square, picking up the piece at that square, and moving it to a second square. 
 \subsection{Key Algorithms}
-\subsubsection{squaretoCoordinates(square)}
+
+
 \subsubsection{plan(move, board, enpassant)}
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for plan(move, lang, worB, board, enpassant, replay)}
+\begin{algorithmic}[1]
+\STATE $\text{Assert all the inputs are valid}$
+\STATE $\text{Split the board input from a single string into the eight FEN components}$
+\STATE $\text{Find the coordinates of the square to move to. The robot will always move \textbf{from} the same square: centre of}$
+\STATEx $\text{the rear of the board}$
+\IF{Castling}
+\STATE $\text{Determine what the rook's move must be given the king's move}$
+\STATE $\text{Call two movePiece functions, one to move the rook, and one to move the king}$
+\ELSIF {En passant}
+\STATE $\text{Determine the position of the pawn to take: it will be the same letter but one number off the destination}$
+\STATEx $\text{position of the just played pawn}$
+\STATE $\text{Move the pawn, and then kill the pawn that has been taken}$
+\ELSIF{The destination square is filled}
+\STATE $\text{First, call the function killPiece to remove the piece in the destination square}$
+\STATE $\text{Then move the piece from its origin square to its destination square}$
+\ELSE
+\STATE $\text{Call movePiece to move the piece from its origin square to its destination square}$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
 \subsubsection{movePiece(moveFrom, moveTo)}
+movePiece takes in two coordinates, and executes a series of requests sent to the robot's motors so the piece gets moved. KillPiece is executed in a similar way, only with a different series of instructions. \newline
+All the pseudo-code below was written in such a way that the instructions are about the gripper: move the gripper over a square, move the gripper down, etc. In the code, the instructions sent to the robot are either "position" instructions, which send the gripper over a square or move the gripper down, or is a "gripper" instruction, which opens or closes the gripper. 
+
+\begin{algorithm}[H]
+\caption{Pseudo-code for movePiece(moveFrom, moveTo)}
+\begin{algorithmic}[1]
+\STATE $\text{Move over square with piece to move}$
+\STATE $\text{Open}$
+\STATE $\text{Move down}$
+\STATE $\text{Closer}$
+\STATE $\text{Move up}$
+\STATE $\text{Move over destination square}$
+\STATE $\text{Move down}$
+\STATE $\text{Open}$
+\STATE $\text{Move up}$
+\STATE $\text{Close}$
+\end{algorithmic}
+\end{algorithm}
+
+
 \section{Testing}
 \section{Reflection: Achievements and Difficulties}
 Overall, the robot was successful in playing a full game of chess with a user, 
@@ -194,5 +315,5 @@ system image w keypad included \\
 [2] \href{https://www.tandfonline.com/doi/abs/10.3109/07420520903523719?casa_token=xuj5yeT4EWEAAAAA\%3ADS5C1NhfiI1XBogq05OfmNmXPNALfdGdCkl8oOSUKUsNgLJZQW5dzziJ_a5yXX3H1YCVc57m8jc\&}{Burkhart Kimberly \& Phelps James R. (2009) AMBER LENSES TO BLOCK BLUE LIGHT AND IMPROVE SLEEP: A RANDOMIZED TRIAL, Chronobiology International, 26:8, 1602-1612, DOI: 10.3109/07420520903523719} \newline
 [3] \href{http://www.mentalhealthamerica.net/blog/how-blue-light-affects-mental-health}{http://www.mentalhealthamerica.net/blog/how-blue-light-affects-mental-health} \newline
 [4]\href{https://uk.rs-online.com/web/p/tubing-struts/7613322/}{https://uk.rs-online.com/web/p/tubing-struts/7613322/}
-
+[5]\href{https://opencv.org/}{https://opencv.org/}
 \end{document}
