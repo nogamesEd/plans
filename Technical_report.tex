@@ -298,13 +298,23 @@ All the pseudo-code below was written in such a way that the instructions are ab
 
 
 \section{Testing}
+gripper accuracy: 143 moves with 100\% precision\\
+23 board states (one full game) w/ 100\% classification rate\\
+average classification time is 9.2s, min is 5.26s when there are few legal moves available, and 14.97s when there are many legal moves. \\
+average is 18.03s to complete a simple move.\\
+36.91s to take a piece and complete a move.\\
+
+
+
 \section{Reflection: Achievements and Difficulties}
-The goals set out at the beginning of this process were all achieved: Checkmate can play a full game of chess on a variety of boards, and a user can select from four difficulty levels. In addition to the very minimal goals set at the beginning of this process, additional features were added to Checkmate's system: voice control in multiple languages, match replay (both the Kasparov vs. Deep Blue match and previous user matches), and minimalistic hardware. 
-failures:
-- gripper was not the original design, that design was too complex
+The goals set out at the beginning of this process were all achieved: Checkmate can play a full game of chess on a variety of boards, and a user can select from four difficulty levels. In addition to the very minimal goals set at the beginning of this process, additional features were added to Checkmate's system: voice control in multiple languages, match replay (both the Kasparov vs. Deep Blue match and previous user matches), and minimalistic hardware. \par
+The group decided at an early stage to create the frame of the robot from aluminium alloy struts to make the robot more structural. Learning from previous year's experience, lego is not structural long term, particularly when long and thin, and the frame of the robot was designed entirely out of long, thin struts, which would have not held up well made of lego. The next step was to 3D print many of the smaller components rather than using lego, as the aluminium alloy did not fit perfectly with the dimensions of many of the lego pieces. The major print was the bases holding the uprights, and then there were a few smaller prints to hold the motors at the top of the uprights and stabilise various components. Minimising the lego and investing early in aluminium alloy was particularly strategic given the design of the robot, and allowed the rest of the robot to be built around the frame, rather than adding stronger frames at he end of the project. \par
+The main difficulties over the eleven weeks of this project were time management and efficiently implementing and discarding solutions that were not practical. This was particularly a struggle with the gripper. The original plan for the gripper involved using suction to hold the pieces to a soft cushion made from a balloon and coffee beans that would move the pieces to their destination square and then release them. There were a few different problems with this design, including the need for a vacuum pump and multiple 3D printed components. Even though this design was a challenge to implement well, it was not discarded until the final weeks of the project, when one team member quickly created a gripper out of lego and some foam, and that gripper worked well. Rather than stubbornly continuing to pursue the first gripper design, it would have been more efficient to throw away that idea earlier and consider a simpler, if less elegant, solution. 
 
 
 \section{Reflection: Performance During Demos and Trade Fair}
+
+ 
 \section{Appendix}
 
 \subsection{High Level Algorithm}
