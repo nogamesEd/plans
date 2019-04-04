@@ -70,19 +70,17 @@ Checkmate runs on 6 AA 1.5V batteries which must be inserted into the EV3 brick 
 \subsubsection{Keypad}
 The keypad is a means of communication, allowing the user to respond to Checkmate's questions. The keypad is a numpad with stickers overlaid, and is connected to the Raspberry Pi via usb. 
 \subsubsection{Speaker}
-Checkmate uses the speaker to communicate with the user, to eliminate the need for a screen. The speaker is connected to the pi via (what). 
+Checkmate uses the speaker to communicate with the user, to eliminate the need for a screen. The speaker is connected to the pi via usb. 
+
 \section{Software}
-The scripts and functions for the robot were all written in Python, and can be viewed in Github under the name "nogames." The overall problem of creating this machine was divided into smaller goals: image segmentation, image analysis, and connecting the Raspberry pi to Stockfish, the chess AI. OpenCV, and open source computer vision and machine learning software library[5], was used to import and manipulate the images of the chessboard. 
+The scripts and functions for the robot were all written in Python 3, and can be viewed in Github under the name "nogames." The overall problem of creating this machine was divided into smaller goals: image segmentation, image analysis, and connecting the Raspberry pi to Stockfish[5], the chess AI. A version of FEN notation[6] to communicate the board state to the AI, the only difference being empty squares were denoted with an asterisk, so each rank was eight items long.\par
+To see a flowchart of the high level algorithm, see the Appenix.
 
-\subsection{High Level Algorithm}
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[scale = .3]{white_square.png}
-\end{figure}
+\subsection{Libraries, APIs, and AIs}
+Stockfish was chosen as the chess AI because it's one of the strongest chess engines in the world, has varying difficulty levels, and is open-source, making it easily accessible and free to use. Stockfish was connected to the Raspberry pi through an SSH connection. OpenCV, an open source computer vision and machine learning software library[7], was used to import and manipulate the images of the chessboard. OpenCV was not used to analyse the images, however.\par 
+Keras, through Tensorflow, was used to analyse individual images of the board and detemine which squares had white pieces, black pieces, or no pieces at all. Keras is a high-level API used to train deep learning models. Using deep learning neural networks was far more successful than previous tests with classifiers (99.5\% success rate). Incorporating logic into the classification process, the image is analysed and all squares are classified as having a white piece, having a black piece, or empty. This is compared to the previous board state, and hopefully only one change is detected. If so, this change is referenced with all possible legal moves based on the previous board state, and if the move is legal, the interpreted move is confirmed with the user. If incorrect, either the image is retaken and reclassified, or determine if the square that changed to empty is correct, and guess which move the user made from the list of legal moves from that square. There are then other branches for other possibilities, such as no changes were made or multiple changes were detected. To see the pseudo-code of the key algorithms used, see section 3B. 
 
 
-\subsection{Contents of Codebase}
 \subsection{Key Algorithms}
 \subsubsection{segmentation\_analysis(image)}
 Segmentation\_analysis takes a raw image as an input (directly from the robot's camera), and edits the image, so the non-chessboard pieces of the image get cropped, and returns the values of the boundaries of the board.
@@ -161,7 +159,7 @@ Detect\_move is used to determine what move a user just made. Detect\_move is ca
 \end{algorithmic}
 \end{algorithm}
 
-
+\newpage
 \subsubsection{userTurn(board, computerside, topleft, bottomright, WorB, vc, firstImage, rotateImage, control, lang, storeMovesList)}
 UserTurn is called after the robot has completed a turn, and runs from then until the user confirms the robot correctly interpreted the user's move, and the move is stored. 
 
@@ -207,10 +205,11 @@ UserTurn is called after the robot has completed a turn, and runs from then unti
 \end{algorithmic}
 \end{algorithm}
 
-
+\newpage
 \subsubsection{gameplayloop(Board)}
+Gameplayloop is the function that executes gameplay and incorporates all the other functions into gameplay. 
 
-\begin{algorithm}[H]
+\begin{algorithm}[h!]
 \caption{Pseudo-code for gameplayloop(Board))}
 \begin{algorithmic}[1]
 \STATE $\text{Initialise camera}$
@@ -252,6 +251,7 @@ There are three primary components of the hardware and software, excluding the r
 
 
 \subsubsection{plan(move, board, enpassant)}
+Plan determines the steps that must be executed before movePiece can be executed, by analysing the board and determining if a piece must be removed, or if movePiece must be executed twice (in the event of castling). 
 
 \begin{algorithm}[H]
 \caption{Pseudo-code for plan(move, lang, worB, board, enpassant, replay)}
@@ -299,21 +299,39 @@ All the pseudo-code below was written in such a way that the instructions are ab
 
 \section{Testing}
 \section{Reflection: Achievements and Difficulties}
-Overall, the robot was successful in playing a full game of chess with a user, 
+The goals set out at the beginning of this process were all achieved: Checkmate can play a full game of chess on a variety of boards, and a user can select from four difficulty levels. In addition to the very minimal goals set at the beginning of this process, additional features were added to Checkmate's system: voice control in multiple languages, match replay (both the Kasparov vs. Deep Blue match and previous user matches), and minimalistic hardware. 
+failures:
+- gripper was not the original design, that design was too complex
+
+
 \section{Reflection: Performance During Demos and Trade Fair}
 \section{Appendix}
+
+\subsection{High Level Algorithm}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale = .3]{white_square.png}
+\end{figure}
+
 to include:\\
 image of the whole robot w labels for forwards backwards movement, left-right movement, up-down movement, gripper, camera, camera tower, ev3 brick, raspberry pi, speaker, keypad. \\
 image of strut w base w labels: strut, cogs, base, motor\\
 image of y-axis w holder for lego strips: chain, gears, strut, slots for lego strips, motors (for LR movement)\\
 closeup of holder w lego strips: cogs, gears, motor, backend pressure\\
 gripper: claw, foam, motor, gears\\
-system image w keypad included \\
+
 
 \section{References}
 \noindent [1] \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4734149/\#r63}{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4734149/\#r63} \newline
 [2] \href{https://www.tandfonline.com/doi/abs/10.3109/07420520903523719?casa_token=xuj5yeT4EWEAAAAA\%3ADS5C1NhfiI1XBogq05OfmNmXPNALfdGdCkl8oOSUKUsNgLJZQW5dzziJ_a5yXX3H1YCVc57m8jc\&}{Burkhart Kimberly \& Phelps James R. (2009) AMBER LENSES TO BLOCK BLUE LIGHT AND IMPROVE SLEEP: A RANDOMIZED TRIAL, Chronobiology International, 26:8, 1602-1612, DOI: 10.3109/07420520903523719} \newline
 [3] \href{http://www.mentalhealthamerica.net/blog/how-blue-light-affects-mental-health}{http://www.mentalhealthamerica.net/blog/how-blue-light-affects-mental-health} \newline
-[4]\href{https://uk.rs-online.com/web/p/tubing-struts/7613322/}{https://uk.rs-online.com/web/p/tubing-struts/7613322/}
-[5]\href{https://opencv.org/}{https://opencv.org/}
+[4]\href{https://uk.rs-online.com/web/p/tubing-struts/7613322/}{https://uk.rs-online.com/web/p/tubing-struts/7613322/}\newline
+[5]\href{https://stockfishchess.org/}{https://stockfishchess.org/}\newline
+[6]\href{https://en.wikipedia.org/wiki/Forsyth\%E2\%80\%93Edwards\_ Notation}
+{https://en.wikipedia.org/wiki/Forsyth\%E2\%80\%93Edwards\_ Notation}\newline
+[7]\href{https://opencv.org/}{https://opencv.org/}
+
+
+
 \end{document}
