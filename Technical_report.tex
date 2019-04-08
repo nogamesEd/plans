@@ -298,19 +298,28 @@ All the pseudo-code below was written in such a way that the instructions are ab
 
 
 \section{Testing}
+
+
+tested as we went along
+big ol final test 
+because we didn't have numbers
+oops
+a haiku
+
+
 gripper accuracy: 143 moves with 100\% precision\\
 23 board states (one full game) w/ 100\% classification rate\\
 average classification time is 9.2s, min is 5.26s when there are few legal moves available, and 14.97s when there are many legal moves. \\
 average is 18.03s to complete a simple move.\\
 36.91s to take a piece and complete a move.\\
-
+segmentation can work w 9/10 images from google, the only one that fails has an intricate border. the two boards experimented with both work.\\
 
 
 \section{Reflection: Achievements and Difficulties}
 The goals set out at the beginning of this process were all achieved: Checkmate can play a full game of chess on a variety of boards, and a user can select from four difficulty levels. In addition to the very minimal goals set at the beginning of this process, additional features were added to Checkmate's system: voice control in multiple languages, match replay (both the Kasparov vs. Deep Blue match and previous user matches), and minimalistic hardware. \par
 The group decided at an early stage to create the frame of the robot from aluminium alloy struts to make the robot more structural. Learning from previous year's experience, lego is not structural long term, particularly when long and thin, and the frame of the robot was designed entirely out of long, thin struts, which would have not held up well made of lego. The next step was to 3D print many of the smaller components rather than using lego, as the aluminium alloy did not fit perfectly with the dimensions of many of the lego pieces. The major print was the bases holding the uprights, and then there were a few smaller prints to hold the motors at the top of the uprights and stabilise various components. Minimising the lego and investing early in aluminium alloy was particularly strategic given the design of the robot, and allowed the rest of the robot to be built around the frame, rather than adding stronger frames at he end of the project. \par
-The main difficulties over the eleven weeks of this project were time management and efficiently implementing and discarding solutions that were not practical. This was particularly a struggle with the gripper. The original plan for the gripper involved using suction to hold the pieces to a soft cushion made from a balloon and coffee beans that would move the pieces to their destination square and then release them. There were a few different problems with this design, including the need for a vacuum pump and multiple 3D printed components. Even though this design was a challenge to implement well, it was not discarded until the final weeks of the project, when one team member quickly created a gripper out of lego and some foam, and that gripper worked well. Rather than stubbornly continuing to pursue the first gripper design, it would have been more efficient to throw away that idea earlier and consider a simpler, if less elegant, solution. 
-ALSO MOTIVATION
+The main difficulties over the eleven weeks of this project were time management and efficiently implementing and discarding solutions that were not practical. This was particularly a struggle with the gripper. The original plan for the gripper involved using suction to hold the pieces to a soft cushion made from a balloon and coffee beans that would move the pieces to their destination square and then release them. There were a few different problems with this design, including the need for a vacuum pump and multiple 3D printed components. Even though this design was a challenge to implement well, it was not discarded until the final weeks of the project, when one team member quickly created a gripper out of lego and some foam, and that gripper worked well. Rather than stubbornly continuing to pursue the first gripper design, it would have been more efficient to throw away that idea earlier and consider a simpler, if less elegant, solution. \par
+The second struggle over the eleven weeks was marketing the robot. The main point of feedback regarding the marketing was "Why not just play on an iPad for free?" which was a valid question, as all the robot's features could be accessed through an AI online for free. The main selling point of Checkmate which needed to be pushed was the ability to play against an AI but without the intermediary of a screen. However, it took a while to find a way to drive this point home, and focussing more on the marketing at an earlier stage would have been beneficial to the creation of goals for the final product. \\
 
 
 \section{Reflection: Performance During Demos and Trade Fair}
@@ -321,24 +330,61 @@ The robot's movements and the presentation at the third demo were both smooth. T
 The final demo was considered a dress rehearsal for the industrial day demo, and the demonstration of all the features of the robot was overly ambitious. The extent of time it takes to calibrate the robot to the chessboard was underestimated, so only one of Checkmate's features could be properly displayed, and the others had to be explained, rather than shown. Because of this, the foremost recommendation was that the length of the demonstration be addressed, either by creating a demonstration script that would just display all the key features of the robot without playing a game, or by changing how the robot was set up, possibly by allowing users to save the calibrations of favourite boards. The group immediately set about creating a demonstration script that would alternate between allowing the user to make the move, and then moving the user's piece for them through voice commands. Not having to calibrate the board each time would have been a good addition, but would have required massive restructuring of the segmentation function integral to the software.\par
 The industrial day demo did not go as planned. The demonstration script had been tested the previous day and had run smoothly, but when the script was loaded to the robot that day, nothing seemed to work. The robot was knocking over pieces, moving pieces to incorrect squares, freezing up, or just refusing to respond to commands. Time was running short, but the bug was eventually fixed, or so was thought. But during the live demo, the robot was turned on, and then froze up before making the first move. The live demo was quickly moved past, and a couple members of the team fixed live demonstration during the Q\&A portion of the demonstration. The robot was then demonstrated, with the only flaw being that the robot misclassified a single board state, and the group did not notice this, so the future board classifications were incorrect. The feedback was mixed, but the three most discussed criticisms were the lack of security, the lack of consideration towards non-verbal and disabled users, and that having to confirm when a move was made as well as confirming that Checkmate had correctly interpreted the board state disrupted the game too much, and made it less desirable to play. Creating security for the system had not been considered, both because the attack surface was minimal already, and the purpose of Checkmate is to learn chess, not learn to hack a system. However, the feedback was considered and learned from. The simple addition of a keyboard so a user could type the moves they wanted Checkmate to make for them would have been a simple idea that would have been more inclusive to non-verbal disabled users, but was not considered, because it would have made the system physically larger, and there would have been extra keys for all verbal users, which would have made the system more confusing. In retrospect, the option to use a full-size keyboard to type in the moves should have been included as an additional feature, and the smaller numpad could have been used for verbal users who did not need that additional feature. There was no easy solution to the constant confirmation, as there was no easy way to determine when the user had made their move other than confirmation, and while the analysis of the boardstate was often correct, it couldn't be guaranteed, so had to be confirmed. \par
 The trade fair was successful, with many members of the public playing with (and getting beaten by) Checkmate. The robot was evidently popular with the judges, and won second place overall as best robot. The group was very pleased with this result and were very grateful for the recognition. \\
- 
+\newpage
 \section{Appendix}
+\smallskip
 
-\subsection{High Level Algorithm}
+\begin{center}
+\begin{minipage}[c]{.45\textwidth}
+%\begin{figure}[h!]
+  %\caption{Gripper}
+  %\centering
+  \includegraphics[scale = .05]{gripper}
+   \captionof{figure}{Gripper}
+   \label{fig:gripper}
+%\end{figure}
+\end{minipage}
+\begin{minipage}[c]{.45\textwidth}
+%\begin{figure}[h!]
+  %\caption{Numpad}
+  %\centering
+  \includegraphics[scale = .05]{numpad}
+   \captionof{figure}{Numpad}
+   \label{fig:numpad}
+%\end{figure}
+\end{minipage}
+\end{center}
+
+\hspace{1cm}
+
+\begin{center}
+\begin{minipage}[c]{.5\textwidth}
+%\begin{figure}[h!]
+  %\caption{Entire Robot}
+  \includegraphics[scale = .05]{Money.JPG}
+   \captionof{figure}{Entire Robot}
+   \label{fig:money}
+%\end{figure}
+\end{minipage}
+\begin{minipage}[c]{.45\textwidth}
+\begin{enumerate}
+\item Aluminium alloy track with inlaid tracks.
+\item 3D printed bases to hold the uprights. Motors situated along side these, to hold the uprights. 
+\item Uprights. 
+\item Chain suspended between gears on motors. The up-down movement is on this chain, so it can move left and right across the board. 
+\item Up-down movement. Long lego strips held in place by the force of the gears pressing against tracks, and moved up and down by these gears moving along the tracks. 
+\item Gripper. 
+\end{enumerate}
+\end{minipage}
+\end{center}
 
 \begin{figure}[h!]
+  \caption{High Level Algorithm}
   \centering
   \includegraphics[scale = .3]{white_square.png}
 \end{figure}
 
-to include:\\
-image of the whole robot w labels for forwards backwards movement, left-right movement, up-down movement, gripper, camera, camera tower, ev3 brick, raspberry pi, speaker, keypad. \\
-image of strut w base w labels: strut, cogs, base, motor\\
-image of y-axis w holder for lego strips: chain, gears, strut, slots for lego strips, motors (for LR movement)\\
-closeup of holder w lego strips: cogs, gears, motor, backend pressure\\
-gripper: claw, foam, motor, gears\\
-
-
+\pagebreak
 \section{References}
 \noindent [1] \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4734149/\#r63}{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4734149/\#r63} \newline
 [2] \href{https://www.tandfonline.com/doi/abs/10.3109/07420520903523719?casa_token=xuj5yeT4EWEAAAAA\%3ADS5C1NhfiI1XBogq05OfmNmXPNALfdGdCkl8oOSUKUsNgLJZQW5dzziJ_a5yXX3H1YCVc57m8jc\&}{Burkhart Kimberly \& Phelps James R. (2009) AMBER LENSES TO BLOCK BLUE LIGHT AND IMPROVE SLEEP: A RANDOMIZED TRIAL, Chronobiology International, 26:8, 1602-1612, DOI: 10.3109/07420520903523719} \newline
