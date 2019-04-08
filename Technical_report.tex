@@ -298,21 +298,13 @@ All the pseudo-code below was written in such a way that the instructions are ab
 
 
 \section{Testing}
+\subsection{Hardware accuracy}
+The components of hardware that needed testing was the gripper's accuracy and the accuracy of the motors when moving in the 3 axes of direction. The gripper was tested over the course of playing several games, and it was found that over 143 moves, the gripper completed each move with 100\% accuracy, meaning the gripper did not drop a piece once. The motors were found to be accurate once timing for how long the motors should run and at what speed was determined. 
+\subsection{Segmentation testing}
+Segmentation was tested with 10 images of clear boards sourced from Google, and 9 of these segmentations were successful. The single segmentation that was not successful was due to an intricate border design around the chessboard, which caused the board cropping to be off by one row. For the chessboard primarily used for testing, 50 tests were run segmenting the chessboard, with 20 empty and 30 full boards, with a 100\% successful segmentation rate. 
+\subsection{Board State Analysis Testing}
+By using a convolutional neural network and a dataset with over 10,000 images for training and testing, an online testing set of 1280 images yielded 99.3\% accuracy, and a testing set of 192 images taken by the team yielded 99.5\% accuracy. The average classification time is 9.2 seconds, the minimum classification time (when there are fewer legal moves available) is 5.26 seconds, and the maximum classification time (when there are many legal moves available) is 14.97 seconds.
 
-
-tested as we went along
-big ol final test 
-because we didn't have numbers
-oops
-a haiku
-
-
-gripper accuracy: 143 moves with 100\% precision\\
-23 board states (one full game) w/ 100\% classification rate\\
-average classification time is 9.2s, min is 5.26s when there are few legal moves available, and 14.97s when there are many legal moves. \\
-average is 18.03s to complete a simple move.\\
-36.91s to take a piece and complete a move.\\
-segmentation can work w 9/10 images from google, the only one that fails has an intricate border. the two boards experimented with both work.\\
 
 
 \section{Reflection: Achievements and Difficulties}
